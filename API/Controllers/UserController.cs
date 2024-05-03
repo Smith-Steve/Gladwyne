@@ -1,5 +1,6 @@
 using System.Data;
 using Gladwyne.API.Data;
+using Gladwyne.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gladwyne.API.Controllers
@@ -32,6 +33,22 @@ namespace Gladwyne.API.Controllers
                 testValue
             };
             return responseArray;
+        }
+
+        [HttpGet("GetUsers")]
+        public IEnumerable<User> GetUsers()
+        {
+            string sqlGetUsersQuery = "Select UserId, FirstName, LastName, Email from GladwyneSchema.Users";
+            IEnumerable<User> users = _dapper.LoadData<User>(sqlGetUsersQuery);
+            return users;
+        }
+
+        [HttpGet("GetSingleUser/{userId}")]
+        public User GetSingleUser(int userId)
+        {
+            string sqlGetSingleUserQuery = $"Select UserId, FirstName, LastName, Email from GladwyneSchema.Users WHERE UserId={userId}";
+            User users = _dapper.LoadDataSingle<User>(sqlGetSingleUserQuery);
+            return users;
         }
     }
 }
