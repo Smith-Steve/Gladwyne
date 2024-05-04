@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\Gladwyne.csproj": {}
+    "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\Gladwyne.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\Gladwyne.csproj": {
+    "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\Gladwyne.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\Gladwyne.csproj",
+        "projectUniqueName": "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\Gladwyne.csproj",
         "projectName": "Gladwyne",
-        "projectPath": "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\Gladwyne.csproj",
-        "packagesPath": "C:\\Users\\Steph\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\obj\\",
+        "projectPath": "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\Gladwyne.csproj",
+        "packagesPath": "C:\\Users\\steve.m.smith\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Steph\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\steve.m.smith\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -49,6 +49,10 @@
               "target": "Package",
               "version": "[5.2.0, )"
             },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
             "Microsoft.AspNetCore.Mvc": {
               "target": "Package",
               "version": "[2.2.0, )"
@@ -57,9 +61,17 @@
               "target": "Package",
               "version": "[8.0.4, )"
             },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[8.0.4, )"
+            },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[6.4.0, )"
+              "version": "[6.5.0, )"
             },
             "automapper": {
               "target": "Package",

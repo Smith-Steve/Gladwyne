@@ -61,7 +61,8 @@ namespace Gladwyne.API.Controllers
         [HttpPost]
         public IActionResult PostUser(User user)
         {
-            string
+            string sqlPostUser = $"";
+            return Ok();
         }
     }
 }

@@ -6,7 +6,7 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_DELETE_Procedure]
+CREATE OR ALTER PROCEDURE [GladwyneSchema].[OrganizationAddress_DELETE_Procedure]
 	@OrgId INT
 AS
 BEGIN
@@ -34,7 +34,7 @@ Execute GladwyneSchema.OrganizationAddress_GETONE_PROCEDURE
 
 Select * From GladwyneSchema.OrganizationsAddress
 */
-ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_GETONE_Procedure]
+CREATE OR ALTER PROCEDURE [GladwyneSchema].[OrganizationAddress_GETONE_Procedure]
 	@OrgId INT
 AS
 BEGIN
@@ -68,7 +68,7 @@ EXECUTE GladwyneSchema.OrganizationAddress_INSERT_Procedure
 	@OrgZip = '92627'
 */
 
-ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_INSERT_Procedure]
+CREATE OR ALTER PROCEDURE [GladwyneSchema].[OrganizationAddress_INSERT_Procedure]
 	@OrgId INT,
 	@OrgCountry NVARCHAR(50),
 	@OrgStreetAddress NVARCHAR(50),
@@ -111,7 +111,7 @@ GO
 		@OrgState = 'District of Columbia',
 		@OrgZip = '20016'
 */
-ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_UPDATE_Procedure]
+CREATE OR ALTER PROCEDURE [GladwyneSchema].[OrganizationAddress_UPDATE_Procedure]
 	@OrgId INT,
 	@OrgCountry NVARCHAR(50),
 	@OrgStreetAddress NVARCHAR(50),

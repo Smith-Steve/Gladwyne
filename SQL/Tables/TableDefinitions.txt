@@ -40,4 +40,4 @@ CREATE TABLE Users
     FirstName NVARCHAR(50),
     LastName NVARCHAR(50),
     Email NVARCHAR(50)
-);C
+);

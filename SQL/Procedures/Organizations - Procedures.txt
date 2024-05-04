@@ -16,7 +16,7 @@ GO
 Select * From Dbo.Organizations
 */
 
-ALTER   PROCEDURE [GladwyneSchema].[Organization_DELETE_Procedure]
+CREATE OR ALTER PROCEDURE [GladwyneSchema].[Organization_DELETE_Procedure]
     @OrgId INT
 AS
 BEGIN
@@ -55,7 +55,7 @@ Updated 5/2/2024
  
 */
 
-ALTER   PROCEDURE [GladwyneSchema].[Organization_GETONE_Procedure]
+CREATE OR ALTER PROCEDURE [GladwyneSchema].[Organization_GETONE_Procedure]
 	@OrgId INT
 AS
 BEGIN
@@ -94,7 +94,7 @@ LAST UPDATED 5/2/2024
 	@OrgActive = TRUE
 */
 
-ALTER   PROCEDURE [GladwyneSchema].[Organization_INSERT_Procedure]
+CREATE OR ALTER PROCEDURE [GladwyneSchema].[Organization_INSERT_Procedure]
     @OrgName NVARCHAR(60),
     @OrgDescription NVARCHAR(MAX),
     @OrgIndustry NVARCHAR(50),
