@@ -1,0 +1,135 @@
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[OrganizationAddress_DELETE_Procedure]    Script Date: 5/3/2024 10:05:37 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_DELETE_Procedure]
+	@OrgId INT
+AS
+BEGIN
+	DELETE
+		FROM GladwyneSchema.OrganizationsAddress
+			WHERE OrgId = @OrgId
+END
+
+===
+
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[OrganizationAddress_GETONE_Procedure]    Script Date: 5/3/2024 10:05:44 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+GETONE OrganizationAddress Procedure
+Update 5/2/2024
+
+Execute GladwyneSchema.OrganizationAddress_GETONE_PROCEDURE
+	@OrgId = 1
+
+Select * From GladwyneSchema.OrganizationsAddress
+*/
+ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_GETONE_Procedure]
+	@OrgId INT
+AS
+BEGIN
+	SELECT OrgId, OrgCountry, OrgStreetAddress, OrgStreetAddress2, OrgCity, OrgState, OrgZip
+	FROM GladwyneSchema.OrganizationsAddress
+			WHERE OrgId = @OrgId
+END
+
+
+===
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[OrganizationAddress_INSERT_Procedure]    Script Date: 5/3/2024 10:05:54 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+SELECT * From Dbo.OrganizationsAddress
+
+USE Gladwyne
+
+EXECUTE GladwyneSchema.OrganizationAddress_INSERT_Procedure
+	@OrgId = 1,
+	@OrgCountry = 'America',
+	@OrgStreetAddress = '421 Bernard Street',
+	@OrgStreetAddress2 = 'Apartment 302',
+	@OrgCity = 'Costa Mesa',
+	@OrgState = 'California',
+	@OrgZip = '92627'
+*/
+
+ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_INSERT_Procedure]
+	@OrgId INT,
+	@OrgCountry NVARCHAR(50),
+	@OrgStreetAddress NVARCHAR(50),
+	@OrgStreetAddress2 NVARCHAR(50) = '',
+	@OrgCity NVARCHAR(50),
+	@OrgState NVARCHAR(50),
+	@OrgZip NVARCHAR(50)
+AS
+BEGIN
+INSERT INTO GladwyneSchema.OrganizationsAddress
+	(
+	OrgId, OrgCountry, OrgStreetAddress, OrgStreetAddress2,
+	OrgCity, OrgState, OrgZip
+	)
+VALUES
+	(
+	@OrgId, @OrgCountry, @OrgStreetAddress, @OrgStreetAddress2,
+	@OrgCity, @OrgState, @OrgZip
+	)
+END
+
+====
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[OrganizationAddress_UPDATE_Procedure]    Script Date: 5/3/2024 10:06:03 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+USE GLADWYNE
+GO
+
+	EXECUTE GladwyneSchema.OrganizationAddress_UPDATE_Procedure
+		@OrgId = 1,
+		@OrgCountry = 'America',
+		@OrgStreetAddress = '1600 Pennsylvania Avenue',
+		@OrgCity = 'Washington',
+		@OrgState = 'District of Columbia',
+		@OrgZip = '20016'
+*/
+ALTER   PROCEDURE [GladwyneSchema].[OrganizationAddress_UPDATE_Procedure]
+	@OrgId INT,
+	@OrgCountry NVARCHAR(50),
+	@OrgStreetAddress NVARCHAR(50),
+	@OrgStreetAddress2 NVARCHAR(50) = '',
+	@OrgCity NVARCHAR(50),
+	@OrgState NVARCHAR(50),
+	@OrgZip NVARCHAR(50)
+AS
+BEGIN
+UPDATE GladwyneSchema.OrganizationsAddress
+	SET
+		OrgCountry = @OrgCountry,
+		OrgStreetAddress = @OrgStreetAddress,
+		OrgStreetAddress2 = @OrgStreetAddress2,
+		OrgCity = @OrgCity,
+		OrgState = @OrgState,
+		OrgZip = @OrgZip
+	WHERE
+		OrgId = @OrgId
+END
+

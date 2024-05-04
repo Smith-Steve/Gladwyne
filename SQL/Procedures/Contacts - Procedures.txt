@@ -1,0 +1,164 @@
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[Contact_DELETE_Procedure]    Script Date: 5/3/2024 10:01:50 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+DELETE CONTACT PROCEDURE
+UPDATED 5/2/2024
+
+
+*/
+
+ALTER   PROCEDURE [GladwyneSchema].[Contact_DELETE_Procedure]
+	@ContactId INT
+AS
+BEGIN
+	DELETE
+	FROM GladwyneSchema.Contacts
+	WHERE ContactId = @ContactId
+END
+
+====
+
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[Contact_GETONE_Procedure]    Script Date: 5/3/2024 10:02:05 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+Contacts GET ONE PROCEDURE
+Edited 5/2/2024
+
+EXECUTE [GladwyneSchema].[Contacts_GETONE_Procedure]
+	@ContactId = 1
+
+Select * From GladwyneSchema.Contacts
+*/
+
+ALTER   PROCEDURE [GladwyneSchema].[Contact_GETONE_Procedure]
+	@ContactId INT
+AS
+BEGIN
+SELECT
+	ContactId,
+	FirstName,
+	LastName,
+	Email,
+	OrgId
+FROM Gladwyne.GladwyneSchema.Contacts
+WHERE
+	ContactId = @ContactId
+END
+
+====
+
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[Contact_INSERT_Procedure]    Script Date: 5/3/2024 10:02:15 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+INSERT CONTACT
+LAST UPDATED 5/2/2024
+
+EXECUTE [GladwyneSchema].[Contact_INSERT_Procedure]
+	@FirstName = 'Tyson',
+	@LastName = 'Babbel',
+	@Email = 'Tyson.Babbel@gmail.com',
+	@OrgId = 1
+
+USE Gladwyne
+SELECT * From GladwyneSchema.Contacts
+*/
+
+ALTER   PROCEDURE [GladwyneSchema].[Contact_INSERT_Procedure]
+	@FirstName NVARCHAR(50),
+	@LastName NVARCHAR(50),
+	@Email NVARCHAR(50),
+	@OrgId INT
+AS
+BEGIN
+Insert INTO [GladwyneSchema].[Contacts]
+	(FirstName, LastName, Email, OrgId)
+VALUES
+	(@FirstName, @LastName, @Email, @OrgId)
+END
+
+====
+
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[Contact_UPDATE_Procedure]    Script Date: 5/3/2024 10:02:23 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+UPDATE CONTACT
+Last Updated 5/2/2024
+
+Use Gladwyne
+Select * FROM GladwyneSchema.Contacts
+*/
+
+ALTER   PROCEDURE [GladwyneSchema].[Contact_UPDATE_Procedure]
+	@ContactId INT,
+	@FirstName NVARCHAR(50),
+	@LastName NVARCHAR(50),
+	@Email NVARCHAR(50)
+AS
+BEGIN
+UPDATE GladwyneSchema.Contacts
+	SET
+		FirstName = @FirstName,
+		LastName = @LastName,
+		Email = @LastName
+	WHERE
+		ContactId = @ContactId
+END
+
+===
+
+USE [Gladwyne]
+GO
+/****** Object:  StoredProcedure [GladwyneSchema].[Contacts_GetAllFromOrganization_Procedure]    Script Date: 5/3/2024 10:02:34 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/*
+Contacts GET ONE PROCEDURE
+Edited 5/2/2024
+
+EXECUTE [GladwyneSchema].[Contacts_GetAllFromOrganization_Procedure]
+	@ContactId = 1
+
+Select * From GladwyneSchema.Contacts
+*/
+
+ALTER   PROCEDURE [GladwyneSchema].[Contacts_GetAllFromOrganization_Procedure]
+	@OrgId INT
+AS
+BEGIN
+SELECT
+	ContactId,
+	FirstName,
+	LastName,
+	Email,
+	OrgId
+FROM Gladwyne.GladwyneSchema.Contacts
+WHERE
+	OrgId = @OrgId
+END

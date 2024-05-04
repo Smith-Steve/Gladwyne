@@ -1,0 +1,43 @@
+USE Gladwyne;
+GO
+
+CREATE TABLE Organizations
+(
+    OrgId INT IDENTITY(1,1) PRIMARY KEY,
+    OrgName NVARCHAR(60),
+    OrgDescription NVARCHAR(MAX),
+    OrgIndustry NVARCHAR(50),
+    OrgWebsite NVARCHAR(50),
+    OrgUpdateDate DATETIME,
+    OrgCreateDate DATETIME,
+    OrgActive BIT
+);
+
+CREATE TABLE OrganizationsAddress
+(
+    OrgId int FOREIGN KEY REFERENCES Organizations(OrgId),
+    OrgCountry NVARCHAR(50),
+    OrgStreetAddress NVARCHAR(50),
+    OrgStreetAddress2 NVARCHAR(25),
+    OrgCity NVARCHAR(50),
+    OrgState NVARCHAR(50),
+    OrgZip NVARCHAR(50)
+);
+
+
+CREATE TABLE Contacts
+(
+    ContactId INT IDENTITY(1,1) PRIMARY KEY,
+    FirstName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    Email NVARCHAR(50),
+    OrgId int FOREIGN KEY REFERENCES Organizations(OrgId)
+)
+
+CREATE TABLE Users
+(
+    UserId INT IDENTITY(1, 1) PRIMARY KEY,
+    FirstName NVARCHAR(50),
+    LastName NVARCHAR(50),
+    Email NVARCHAR(50)
+);C

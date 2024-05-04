@@ -50,5 +50,18 @@ namespace Gladwyne.API.Controllers
             User users = _dapper.LoadDataSingle<User>(sqlGetSingleUserQuery);
             return users;
         }
+
+        [HttpPut]
+        public IActionResult EditUser(User user)
+        {
+            string sqlEditUserQuery = $"";
+            return Ok();
+        }
+
+        [HttpPost]
+        public IActionResult PostUser(User user)
+        {
+            string
+        }
     }
 }
