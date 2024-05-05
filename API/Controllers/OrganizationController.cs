@@ -27,13 +27,11 @@ namespace Gladwyne.API.Controllers
             }
             throw new Exception("Failed to Delete Organization.");
         }
-
+        
+        //Organization Post Controller
         [HttpPost("OrganizationPost")]
         public IActionResult AddOrganization(OrganizationDTO organization)
         {
-            Console.WriteLine("=== Print Out Organization ===");
-            Console.WriteLine(organization.OrgName);
-            Console.WriteLine("=== Print Out Organization - End ===");
             string sqlAddOrganization = @"
             INSERT INTO dbo.Organizations(
                 OrgName, OrgDescription, OrgIndustry,
@@ -44,31 +42,26 @@ namespace Gladwyne.API.Controllers
                 + "','" + organization.OrgWebsite
                 + "','" + organization.OrgActive
                 + "', GETDATE(), GETDATE() )";
-            Console.WriteLine("=== START ===");
-            Console.WriteLine(sqlAddOrganization);
-            Console.WriteLine("=== END ===");
-
-            // string sqlAddOrganization2 = @"INSERT 
-            // INTO dbo.Organizations(
-            //     [OrgName], 
-            //     [OrgDescription], 
-            //     [OrgIndustry],
-            //     [OrgWebsite], 
-            //     [OrgUpdateDate], 
-            //     [OrgCreateDate], 
-            //     [OrgActive]) VALUES 
-            //     ('{organization.OrgName}', 
-            //     '{organization.OrgDescription}', 
-            //     '{organization.OrgIndustry}', 
-            //     '{organization.OrgWebsite}', 
-            //     GETDATE(), GETDATE(), 
-            //     {organization.OrgActive})";
             if(_dapper.ExecuteSql(sqlAddOrganization))
             {
                 return Ok();
             }
             throw new Exception("Failed to create new Organization.");
         }
+
+        //Organization Put Controller
+        [HttpPut("OrganizationPut/{orgId}")]
+        public IActionResult EditOrganization(Organization organization, string orgId)
+        {
+            string sqlUpdateOrganization = $"UPDATE dbo.Organizations SET OrgName = '{organization.OrgName}', OrgDescription = '{organization.OrgDescription}', OrgIndustry = '{organization.OrgIndustry}', OrgWebsite = '{organization.OrgWebsite}', OrgUpdateDate = GETDATE(), OrgActive = '{organization.OrgActive}' WHERE OrgId = {orgId}";
+            Console.WriteLine(sqlUpdateOrganization);
+            if(_dapper.ExecuteSql(sqlUpdateOrganization))
+            {
+                return Ok();
+            }
+            throw new Exception($"Failed to Update Organization: ${organization.OrgName}");
+        }
+        
 
         [HttpGet("{orgId}")]
         public Organization GetSingleOrganization(int orgId)

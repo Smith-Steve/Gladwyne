@@ -2,7 +2,7 @@ namespace Gladwyne.Models
 {
     public partial class Organization
     {
-        public int OrdId { get; set; }
+        public int OrgId { get; set; }
         public string OrgName { get; set; } = "";
         public string OrgDescription { get; set; } = "";
         public string OrgIndustry { get; set; } = "";
