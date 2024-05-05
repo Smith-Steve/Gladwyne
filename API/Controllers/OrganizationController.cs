@@ -61,14 +61,23 @@ namespace Gladwyne.API.Controllers
             }
             throw new Exception($"Failed to Update Organization: ${organization.OrgName}");
         }
-        
 
+        //Get Organization By ID
         [HttpGet("{orgId}")]
         public Organization GetSingleOrganization(int orgId)
         {
             string sqlGetOrganization = $"Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive From dbo.Organizations WHERE OrgId = {orgId}";
             Organization organization = _dapper.LoadDataSingle<Organization>(sqlGetOrganization);
             return organization;
+        }
+
+        //Get All Organizations
+        [HttpGet("OrganizationGetAll")]
+        public IEnumerable<Organization> GetAllOrganizations()
+        {
+            string sqlGetAllOrganizations = "Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive from  dbo.Organizations";
+            IEnumerable<Organization> organizations = _dapper.LoadData<Organization>(sqlGetAllOrganizations);
+            return organizations;
         }
     }
 }
