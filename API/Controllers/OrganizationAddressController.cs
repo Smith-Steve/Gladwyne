@@ -74,9 +74,6 @@ namespace Gladwyne.Controllers
         public IActionResult UpdateOrganizationAddress(OrganizationAddress orgAdress)
         {
             string sqlUpdateOrgAddress = $"UPDATE dbo.OrganizationsAddress SET '{orgAdress.OrgCountry}','{orgAdress.OrgStreetAddress}', '{orgAdress.OrgStreetAddress2}','{orgAdress.OrgCity}','{orgAdress.OrgState}', '{orgAdress.OrgZip}' WHERE OrgId = '{orgAdress.OrgId}'";
-            Console.WriteLine("=====");
-            Console.WriteLine(sqlUpdateOrgAddress);
-            Console.WriteLine("=====");
             if(_dapper.ExecuteSql(sqlUpdateOrgAddress))
             {
                 return Ok();
