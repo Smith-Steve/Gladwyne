@@ -39,5 +39,27 @@ namespace Gladwyne.Controllers
             Contact contact = _dapper.LoadDataSingle<Contact>(sqlGetContact);
             return contact;
         }
+
+        [HttpDelete("DeleteContact/{contactId}")]
+        public IActionResult DeleteContact(int contactId)
+        {
+            string sqlDeleteContact = $"DELETE FROM dbo.Contacts Where ContactId = {contactId}";
+            if(_dapper.ExecuteSql(sqlDeleteContact))
+            {
+                return Ok();
+            }
+            throw new Exception("Failed to Delete Contact");
+        }
+
+        [HttpPost("CreateContact")]
+        public IActionResult AddContact(ContactDTO contact)
+        {
+            string sqlAddContact = $"INSERT INTO dbo.Contacts (FirstName, LastName, Email, OrgId) VALUES ('{contact.FirstName}', '{contact.LastName}', '{contact.Email}', '{contact.OrgId}')";
+            if(_dapper.ExecuteSql(sqlAddContact))
+            {
+                return Ok();
+            }
+            throw new Exception("Failed to create Contact");
+        }
     }
 }
