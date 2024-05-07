@@ -61,5 +61,16 @@ namespace Gladwyne.Controllers
             }
             throw new Exception("Failed to create Contact");
         }
+
+        [HttpPut("EditContact")]
+        public IActionResult EditContactInfo(Contact contact)
+        {
+            string sqlUpdateContact = $"Update dbo.Contacts SET [FirstName] = {contact.FirstName}, [LastName] = {contact.LastName}, [Email] = {contact.Email} WHERE ContactId = {contact.ContactId}";
+            if(_dapper.ExecuteSql(sqlUpdateContact))
+            {
+                return Ok();
+            }
+            throw new Exception("Failed To Update Contact");
+        }
     }
 }
