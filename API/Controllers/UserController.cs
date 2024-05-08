@@ -1,6 +1,7 @@
 using System.Data;
 using Gladwyne.API.Data;
 using Gladwyne.Models;
+using Gladwyne.Controllers.Contacts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gladwyne.API.Controllers
@@ -15,30 +16,13 @@ namespace Gladwyne.API.Controllers
         {
             //User Constructor
             _dapper = new DataContextDapper(configuration);
-        }
 
-        [HttpGet("TestConnection")]
-        public DateTime TestConnection()
-        {
-            return _dapper.LoadDataSingle<DateTime>("SELECT GETDATE()");
-        }
-
-        [HttpGet("Test")]
-        public string[] Test(string testValue)
-        {
-            string[] responseArray = new string[]
-            {
-                "Test",
-                "Test2",
-                testValue
-            };
-            return responseArray;
         }
 
         [HttpGet("GetUsers")]
         public IEnumerable<User> GetUsers()
         {
-            string sqlGetUsersQuery = "Select UserId, FirstName, LastName, Email from GladwyneSchema.Users";
+            string sqlGetUsersQuery = "Select UserId, FirstName, LastName, Email, Password from dbo.Users";
             IEnumerable<User> users = _dapper.LoadData<User>(sqlGetUsersQuery);
             return users;
         }
@@ -46,7 +30,7 @@ namespace Gladwyne.API.Controllers
         [HttpGet("GetSingleUser/{userId}")]
         public User GetSingleUser(int userId)
         {
-            string sqlGetSingleUserQuery = $"Select UserId, FirstName, LastName, Email from GladwyneSchema.Users WHERE UserId={userId}";
+            string sqlGetSingleUserQuery = $"Select UserId, FirstName, LastName, Email from dbo.Users WHERE UserId={userId}";
             User users = _dapper.LoadDataSingle<User>(sqlGetSingleUserQuery);
             return users;
         }
@@ -54,14 +38,43 @@ namespace Gladwyne.API.Controllers
         [HttpPut]
         public IActionResult EditUser(User user)
         {
-            string sqlEditUserQuery = $"";
+            try
+            {
+                GetSingleUser(user.UserId);
+                string sqlUpdate = @"
+                UPDATE TutorialAppSchema.Users
+                SET [FirstName] = '" + user.FirstName + 
+                    "', [LastName] = '" + user.LastName +
+                    "', [Email] = '" + user.Email + 
+                    "', [Password] = '" + user.Password + 
+                "' WHERE UserId = " + user.UserId;
+                if(_dapper.ExecuteSql(sqlUpdate))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    throw new Exception($"Failed to User: {user.FirstName} {user.LastName}");
+                }
+            }
+            catch
+            {
+                throw new Exception("Please check the user and try again.");
+            }
             return Ok();
         }
 
         [HttpPost]
         public IActionResult PostUser(User user)
         {
-            return Ok();
+            try
+            {
+                GetSingleUser
+            }
+            catch
+            {
+
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ using Gladwyne.API.Data;
 using Gladwyne.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Gladwyne.Controllers
+namespace Gladwyne.Controllers.Contacts
 {
     public class ContactController : ControllerBase
     {
@@ -40,6 +40,7 @@ namespace Gladwyne.Controllers
             return contact;
         }
 
+        //Delete Contact
         [HttpDelete("DeleteContact/{contactId}")]
         public IActionResult DeleteContact(int contactId)
         {
@@ -51,10 +52,20 @@ namespace Gladwyne.Controllers
             throw new Exception("Failed to Delete Contact");
         }
 
+        //Create Contact
         [HttpPost("CreateContact")]
-        public IActionResult AddContact(ContactDTO contact)
+        public IActionResult AddContact(Contact contact)
         {
             string sqlAddContact = $"INSERT INTO dbo.Contacts (FirstName, LastName, Email, OrgId) VALUES ('{contact.FirstName}', '{contact.LastName}', '{contact.Email}', '{contact.OrgId}')";
+            try
+            {
+
+            }
+            catch
+            {
+
+            }
+
             if(_dapper.ExecuteSql(sqlAddContact))
             {
                 return Ok();
@@ -62,15 +73,28 @@ namespace Gladwyne.Controllers
             throw new Exception("Failed to create Contact");
         }
 
+        //Edit Contact
         [HttpPut("EditContact")]
         public IActionResult EditContactInfo(Contact contact)
         {
-            string sqlUpdateContact = $"Update dbo.Contacts SET [FirstName] = {contact.FirstName}, [LastName] = {contact.LastName}, [Email] = {contact.Email} WHERE ContactId = {contact.ContactId}";
-            if(_dapper.ExecuteSql(sqlUpdateContact))
+            try
             {
-                return Ok();
+                GetSingleContact(contact.ContactId);
+                string updateSqlContact = $"UPDATE dbo.Contacts SET FirstName = '{contact.FirstName}', LastName = '{contact.LastName}', Email = '{contact.Email}' WHERE ContactId = {contact.ContactId}";
+                if(_dapper.ExecuteSql(updateSqlContact))
+                {
+                    return Ok();
+                }
+                else
+                {
+                    throw new Exception($"Failed To Update Contact: {contact.FirstName} {contact.LastName}");
+                }
             }
-            throw new Exception("Failed To Update Contact");
+            catch
+            {
+                throw new Exception("Please check the contact entered and try again.");
+            }
+
         }
     }
 }
