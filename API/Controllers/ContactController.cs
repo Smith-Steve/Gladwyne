@@ -16,7 +16,7 @@ namespace Gladwyne.Controllers.Contacts
         [HttpGet("GetAll")]
         public IEnumerable<Contact> GetAllContacts()
         {
-            string sqlGetAllContacts = "Select ContactId, FirstName, LastName, Email, OrgId from dbo.Contacts";
+            string sqlGetAllContacts = "Select ContactId, FirstName, LastName, Email, OrgId from [GladwyneSchema].Contacts";
             IEnumerable<Contact> contacts = _dapper.LoadData<Contact>(sqlGetAllContacts);
             return contacts;
         }
@@ -26,7 +26,7 @@ namespace Gladwyne.Controllers.Contacts
         [HttpGet("GetAllOrganization/{OrgId}")]
         public IEnumerable<Contact> GetAllContactsFromOrganization(int OrgId)
         {
-            string sqlGetAllContactsFromOrganization = $"Select ContactId, FirstName, LastName, Email, OrgId from dbo.Contacts WHERE OrgId = {OrgId}";
+            string sqlGetAllContactsFromOrganization = $"Select ContactId, FirstName, LastName, Email, OrgId from [GladwyneSchema].Contacts WHERE OrgId = {OrgId}";
             IEnumerable<Contact> contacts = _dapper.LoadData<Contact>(sqlGetAllContactsFromOrganization);
             return contacts;
         }
@@ -35,7 +35,7 @@ namespace Gladwyne.Controllers.Contacts
         [HttpGet("GetContact/{contactId}")]
         public Contact GetSingleContact(int contactId)
         {
-            string sqlGetContact = $"Select ContactId, FirstName, LastName, OrgId from dbo.Contacts where ContactId = {contactId}";
+            string sqlGetContact = $"Select ContactId, FirstName, LastName, OrgId from [GladwyneSchema].Contacts where ContactId = {contactId}";
             Contact contact = _dapper.LoadDataSingle<Contact>(sqlGetContact);
             return contact;
         }
@@ -44,7 +44,7 @@ namespace Gladwyne.Controllers.Contacts
         [HttpDelete("DeleteContact/{contactId}")]
         public IActionResult DeleteContact(int contactId)
         {
-            string sqlDeleteContact = $"DELETE FROM dbo.Contacts Where ContactId = {contactId}";
+            string sqlDeleteContact = $"DELETE FROM [GladwyneSchema].Contacts Where ContactId = {contactId}";
             if(_dapper.ExecuteSql(sqlDeleteContact))
             {
                 return Ok();
@@ -56,7 +56,7 @@ namespace Gladwyne.Controllers.Contacts
         [HttpPost("CreateContact")]
         public IActionResult AddContact(Contact contact)
         {
-            string sqlAddContact = $"INSERT INTO dbo.Contacts (FirstName, LastName, Email, OrgId) VALUES ('{contact.FirstName}', '{contact.LastName}', '{contact.Email}', '{contact.OrgId}')";
+            string sqlAddContact = $"INSERT INTO [GladwyneSchema].Contacts (FirstName, LastName, Email, OrgId) VALUES ('{contact.FirstName}', '{contact.LastName}', '{contact.Email}', '{contact.OrgId}')";
             try
             {
 
@@ -80,7 +80,7 @@ namespace Gladwyne.Controllers.Contacts
             try
             {
                 GetSingleContact(contact.ContactId);
-                string updateSqlContact = $"UPDATE dbo.Contacts SET FirstName = '{contact.FirstName}', LastName = '{contact.LastName}', Email = '{contact.Email}' WHERE ContactId = {contact.ContactId}";
+                string updateSqlContact = $"UPDATE [GladwyneSchema].Contacts SET FirstName = '{contact.FirstName}', LastName = '{contact.LastName}', Email = '{contact.Email}' WHERE ContactId = {contact.ContactId}";
                 if(_dapper.ExecuteSql(updateSqlContact))
                 {
                     return Ok();

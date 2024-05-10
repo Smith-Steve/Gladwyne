@@ -20,7 +20,7 @@ namespace Gladwyne.API.Controllers
         [HttpDelete("OrganizationDelete/{orgId}")]
         public IActionResult DeleteOrganization(int orgId)
         {
-            string sqlDeleteOrganization = $"DELETE FROM dbo.Organizations WHERE OrgId = {orgId}";
+            string sqlDeleteOrganization = $"DELETE FROM [GladwyneSchema].Organizations WHERE OrgId = {orgId}";
             if(_dapper.ExecuteSql(sqlDeleteOrganization))
             {
                 return StatusCode(200, "Delete Successful");
@@ -33,7 +33,7 @@ namespace Gladwyne.API.Controllers
         public IActionResult AddOrganization(OrganizationDTO organization)
         {
             string sqlAddOrganization = @"
-            INSERT INTO dbo.Organizations(
+            INSERT INTO [GladwyneSchema].Organizations(
                 OrgName, OrgDescription, OrgIndustry,
                 OrgWebsite, orgActive,OrgUpdateDate, OrgCreateDate) VALUES ('"
                 +  organization.OrgName
@@ -53,7 +53,7 @@ namespace Gladwyne.API.Controllers
         [HttpPut("OrganizationPut/{orgId}")]
         public IActionResult EditOrganization(Organization organization, string orgId)
         {
-            string sqlUpdateOrganization = $"UPDATE dbo.Organizations SET OrgName = '{organization.OrgName}', OrgDescription = '{organization.OrgDescription}', OrgIndustry = '{organization.OrgIndustry}', OrgWebsite = '{organization.OrgWebsite}', OrgUpdateDate = GETDATE(), OrgActive = '{organization.OrgActive}' WHERE OrgId = {orgId}";
+            string sqlUpdateOrganization = $"UPDATE [GladwyneSchema].Organizations SET OrgName = '{organization.OrgName}', OrgDescription = '{organization.OrgDescription}', OrgIndustry = '{organization.OrgIndustry}', OrgWebsite = '{organization.OrgWebsite}', OrgUpdateDate = GETDATE(), OrgActive = '{organization.OrgActive}' WHERE OrgId = {orgId}";
             Console.WriteLine(sqlUpdateOrganization);
             if(_dapper.ExecuteSql(sqlUpdateOrganization))
             {
@@ -66,7 +66,7 @@ namespace Gladwyne.API.Controllers
         [HttpGet("{orgId}")]
         public Organization GetSingleOrganization(int orgId)
         {
-            string sqlGetOrganization = $"Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive From dbo.Organizations WHERE OrgId = {orgId}";
+            string sqlGetOrganization = $"Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive From [GladwyneSchema].Organizations WHERE OrgId = {orgId}";
             Organization organization = _dapper.LoadDataSingle<Organization>(sqlGetOrganization);
             return organization;
         }
@@ -75,7 +75,7 @@ namespace Gladwyne.API.Controllers
         [HttpGet("OrganizationGetAll")]
         public IEnumerable<Organization> GetAllOrganizations()
         {
-            string sqlGetAllOrganizations = "Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive from  dbo.Organizations";
+            string sqlGetAllOrganizations = "Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive from  [GladwyneSchema].Organizations";
             IEnumerable<Organization> organizations = _dapper.LoadData<Organization>(sqlGetAllOrganizations);
             return organizations;
         }

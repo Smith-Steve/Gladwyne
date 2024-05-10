@@ -64,17 +64,17 @@ namespace Gladwyne.API.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        public IActionResult PostUser(User user)
-        {
-            try
-            {
-                GetSingleUser
-            }
-            catch
-            {
+        // [HttpPost]
+        // public IActionResult PostUser(User user)
+        // {
+        //     try
+        //     {
+        //         GetSingleUser
+        //     }
+        //     catch
+        //     {
 
-            }
-        }
+        //     }
+        // }
     }
 }

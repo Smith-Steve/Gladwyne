@@ -10115,19 +10115,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\steve.m.smith\\.nuget\\packages\\": {}
+    "C:\\Users\\Steph\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\Gladwyne.csproj",
+      "projectUniqueName": "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\Gladwyne.csproj",
       "projectName": "Gladwyne",
-      "projectPath": "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\Gladwyne.csproj",
-      "packagesPath": "C:\\Users\\steve.m.smith\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\steve.m.smith\\repositories\\Gladwyne\\obj\\",
+      "projectPath": "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\Gladwyne.csproj",
+      "packagesPath": "C:\\Users\\Steph\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Steph\\csharp-selfguided-programs\\Gladwyne\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\steve.m.smith\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Steph\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
