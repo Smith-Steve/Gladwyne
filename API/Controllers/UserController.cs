@@ -22,7 +22,7 @@ namespace Gladwyne.API.Controllers
         [HttpGet("GetUsers")]
         public IEnumerable<User> GetUsers()
         {
-            string sqlGetUsersQuery = "Select UserId, FirstName, LastName, Email, Password from dbo.Users";
+            string sqlGetUsersQuery = "Select UserId, FirstName, LastName, Email from GladwyneSchema.Users";
             IEnumerable<User> users = _dapper.LoadData<User>(sqlGetUsersQuery);
             return users;
         }
@@ -30,7 +30,7 @@ namespace Gladwyne.API.Controllers
         [HttpGet("GetSingleUser/{userId}")]
         public User GetSingleUser(int userId)
         {
-            string sqlGetSingleUserQuery = $"Select UserId, FirstName, LastName, Email from dbo.Users WHERE UserId={userId}";
+            string sqlGetSingleUserQuery = $"Select UserId, FirstName, LastName, Email from GladwyneSchema.Users WHERE UserId={userId}";
             User users = _dapper.LoadDataSingle<User>(sqlGetSingleUserQuery);
             return users;
         }
@@ -42,11 +42,10 @@ namespace Gladwyne.API.Controllers
             {
                 GetSingleUser(user.UserId);
                 string sqlUpdate = @"
-                UPDATE TutorialAppSchema.Users
+                UPDATE GladwyneSchema.Users
                 SET [FirstName] = '" + user.FirstName + 
                     "', [LastName] = '" + user.LastName +
-                    "', [Email] = '" + user.Email + 
-                    "', [Password] = '" + user.Password + 
+                    "', [Email] = '" + user.Email +
                 "' WHERE UserId = " + user.UserId;
                 if(_dapper.ExecuteSql(sqlUpdate))
                 {
@@ -61,20 +60,35 @@ namespace Gladwyne.API.Controllers
             {
                 throw new Exception("Please check the user and try again.");
             }
-            return Ok();
         }
 
-        // [HttpPost]
-        // public IActionResult PostUser(User user)
-        // {
-        //     try
-        //     {
-        //         GetSingleUser
-        //     }
-        //     catch
-        //     {
+        [HttpPost]
+        public IActionResult PostUser(UserDTO user)
+        {
+            string sqlAddUser = $"INSERT INTO GladwyneSchema.USERS(FirstName, Lastname, Email) VALUES ('{user.FirstName}', '{user.LastName}', '{user.Email}')";
+            Console.WriteLine(sqlAddUser);
+            if(_dapper.ExecuteSql(sqlAddUser))
+            {
+                return Ok();
+            }
+            else
+            {
+                throw new Exception("Failed to Add User.");
+            }
+        }
 
-        //     }
-        // }
+        [HttpDelete]
+        public IActionResult DeleteUser(int userId)
+        {
+            string sqlDeleteUser = $"DELETE FROM [GladwyneSchema].Users Where UserId={userId}";
+            if(_dapper.ExecuteSql(sqlDeleteUser))
+            {
+                return Ok();
+            }
+            else
+            {
+                throw new Exception("Unable to create user.");
+            }
+        }
     }
 }

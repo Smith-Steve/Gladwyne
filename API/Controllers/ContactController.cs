@@ -57,14 +57,6 @@ namespace Gladwyne.Controllers.Contacts
         public IActionResult AddContact(Contact contact)
         {
             string sqlAddContact = $"INSERT INTO [GladwyneSchema].Contacts (FirstName, LastName, Email, OrgId) VALUES ('{contact.FirstName}', '{contact.LastName}', '{contact.Email}', '{contact.OrgId}')";
-            try
-            {
-
-            }
-            catch
-            {
-
-            }
 
             if(_dapper.ExecuteSql(sqlAddContact))
             {

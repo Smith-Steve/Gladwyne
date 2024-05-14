@@ -6,7 +6,7 @@ using Gladwyne.Models;
 using Microsoft.AspNetCore.Mvc;
 
 //Organization Address Controller.
-namespace Gladwyne.Controllers
+namespace Gladwyne.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
