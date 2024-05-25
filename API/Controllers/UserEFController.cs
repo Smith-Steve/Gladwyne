@@ -3,6 +3,7 @@ using Gladwyne.API.Data;
 using Gladwyne.Models;
 using Gladwyne.Controllers.Contacts;
 using Microsoft.AspNetCore.Mvc;
+using AutoMapper;
 
 namespace Gladwyne.API.Controllers
 {
@@ -12,10 +13,14 @@ namespace Gladwyne.API.Controllers
     public class UserEFController : ControllerBase
     {
         DataContextEF _entityFramework;
+        IMapper _mapper;
         public UserEFController(IConfiguration configuration)
         {
             //User Constructor
             _entityFramework = new DataContextEF(configuration);
+            _mapper = new Mapper(new MapperConfiguration(config => {
+                config.CreateMap<UserDTO, User>();
+            }));
 
         }
 
@@ -62,10 +67,7 @@ namespace Gladwyne.API.Controllers
         [HttpPost]
         public IActionResult AddUser(UserDTO user)
         {
-            User userDB = new User();
-            userDB.FirstName = user.FirstName;
-            userDB.LastName = user.LastName;
-            userDB.Email = user.Email;
+            User userDB = _mapper.Map<User>(user);
             _entityFramework.Add(userDB);
             if(_entityFramework.SaveChanges() > 0)
             {
