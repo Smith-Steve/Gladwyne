@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Gladwyne")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5c27c56732e3b89036a72e17e5ef2e3f90fe3c4c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2c633b0aef052739505333ef3161570e410c9e2f")]
 [assembly: System.Reflection.AssemblyProductAttribute("Gladwyne")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Gladwyne")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

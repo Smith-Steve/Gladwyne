@@ -43,7 +43,18 @@ namespace Gladwyne.API.Controllers
             }
             throw new Exception("Failed To Get User");
         }
-
+        
+        [HttpPost]
+        public IActionResult AddUser(UserDTO user)
+        {
+            User userDB = _mapper.Map<User>(user);
+            _entityFramework.Add(userDB);
+            if(_entityFramework.SaveChanges() > 0)
+            {
+                return Ok("User Added");
+            }
+            throw new Exception("Failed To Add User");
+        }
         [HttpPut("EditUser")]
         public IActionResult EditUser(User user)
         {
@@ -62,18 +73,6 @@ namespace Gladwyne.API.Controllers
                 throw new Exception("Failed To Update User");
             }
             throw new Exception("Unable to Retrieve User");
-        }
-
-        [HttpPost]
-        public IActionResult AddUser(UserDTO user)
-        {
-            User userDB = _mapper.Map<User>(user);
-            _entityFramework.Add(userDB);
-            if(_entityFramework.SaveChanges() > 0)
-            {
-                return Ok("User Added");
-            }
-            throw new Exception("Failed To Add User");
         }
 
         [HttpDelete("DeleteUser/{userId}")]
