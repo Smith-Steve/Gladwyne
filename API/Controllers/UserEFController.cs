@@ -39,7 +39,7 @@ namespace Gladwyne.API.Controllers
             throw new Exception("Failed To Get User");
         }
 
-        [HttpPut]
+        [HttpPut("EditUser")]
         public IActionResult EditUser(User user)
         {
             User? userDB = _entityFramework.Users

@@ -13,10 +13,10 @@ namespace Gladwyne.API.Data
 
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Organization> Organizations { get; set; }
-        public virtual DbSet<OrganizationDTO> OrganizationsDTO { get; set;}
+        // public virtual DbSet<OrganizationDTO> OrganizationsDTO { get; set;}
         public virtual DbSet<OrganizationAddress> OrganizationsAddress { get; set; }
         public virtual DbSet<Contact> Contacts { get; set; }
-        public virtual DbSet<ContactDTO> ContactDTOs{ get; set; }
+        // public virtual DbSet<ContactDTO> ContactDTO{ get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
