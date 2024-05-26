@@ -31,10 +31,10 @@ namespace Gladwyne.API.Controllers
             if(newUser.Password == newUser.PasswordConfirm)
             {
                 //We need to check if there is a user with that email in our system already.
-                string sqlCheckUserExists = $"Select Email From GladwyneSchema.Auth WHERE Email = {newUser.Email}";
+                string sqlCheckUserExists = $"Select Email From GladwyneSchema.Auth WHERE Email = '{newUser.Email}'";
 
                 IEnumerable<string> existingUsers = _dapper.LoadData<string>(sqlCheckUserExists);
-                if(existingUsers.Count() > 0)
+                if(existingUsers.Count() == 0)
                 {
                     //We know the user doesn't exist.
                     //We know that there are two matching passwords.
@@ -50,30 +50,11 @@ namespace Gladwyne.API.Controllers
                         // 1.)We are using the random number array with the user the password sent us (in newUser.Password and newUser.PasswordConfirm respectively)
                         //    To generate 'hashed' password which is more secure.
                         randomNumber.GetNonZeroBytes(passwordSalt);
-
-                        // 2.) We're going to use the random string we set up in our appSettings Json file
-                        //     With that password key, it will be more secure.
-
-                        // 2a.) We're going to set our string.
-                        string passwordSaltPlusString = _configuration.GetSection("AppSettings:PasswordKey").Value + 
-                            Convert.ToBase64String(passwordSalt);
-                        
-                        // 3.) We're creating our 'actual password hash'.
-                        // 3a.) we are passing in our password.
-                        // 3b.) We are passing in our salt.
-                        // 3c.) Method of Hashing. We are describing the schema to use when we are hashing in the 'HMACSHA.."
-                        // 4d.) Our iteration. This is where we describe to our program how many times we want to hash this.
-                        //      the more you hash it, the more secure your application is.
-                        byte[] passwordHash = KeyDerivation.Pbkdf2(
-                            password: newUser.Password,
-                            salt: Encoding.ASCII.GetBytes(passwordSaltPlusString),
-                            prf: KeyDerivationPrf.HMACSHA256,
-                            iterationCount: 10,
-                            numBytesRequested: 256/8
-                        );
+                    }
+                        byte[] passwordHash = GetPasswordHash(newUser.Password, passwordSalt);
 
                         //4.) We are creating our SQL Method.
-                        string sqlAddAuthentication = $"Select Email, PasswordHash, PasswordSalt From GladwyneSchema.Auth VALUES ('{newUser.Email}', @PasswordHash, @PasswordSalt)";
+                        string sqlAddAuthentication = $"INSERT INTO GladwyneSchema.Auth (Email, PasswordHash, PasswordSalt) VALUES ('{newUser.Email}', @PasswordHash, @PasswordSalt)";
 
                         //5.) We are creating a list of SQL Paramters. We are doing this so we can add to the list once we create those paramters.
                         //    we will then include that list of parameters with our sql call.
@@ -95,11 +76,9 @@ namespace Gladwyne.API.Controllers
                         // We are now ready to pass this into our DB.
                         if(_dapper.ExecuteSqlWithParameters(sqlAddAuthentication, sqlParameters))
                         {
-
                             return Ok();
                         }
                         throw new Exception("Failed to Register User");
-                    }
                 }
                 throw new Exception("User With This Email Already Exists");
             }
@@ -108,8 +87,45 @@ namespace Gladwyne.API.Controllers
         [HttpPost("Login")]
         public IActionResult Login(UserForLoginDTO loginUser)
         {
+            //We want to run a query that uses the email to get the Password Hash and Salt.
+            string sqlForHashAndSalt = $"Select PasswordHash, PasswordSalt From GladwyneSchema.Auth WHERE Email = '{loginUser.Email}'";
+
+            UserForLoginConfirmationDTO userForConfirmation = _dapper.LoadDataSingle<UserForLoginConfirmationDTO>(sqlForHashAndSalt);
+            byte[] passwordHash = GetPasswordHash(loginUser.Password, userForConfirmation.PasswordSalt);
+
+            for(int index = 0; index < passwordHash.Length; index ++)
+            {
+                if(passwordHash[index] != userForConfirmation.PasswordHash[index])
+                {
+                    return StatusCode(401, "Incorrect Password!");
+                }
+            }
             return Ok();
         }
 
+        private byte[] GetPasswordHash(string password, byte[] passwordSalt)
+        {
+            // 2.) We're going to use the random string we set up in our appSettings Json file
+            //     With that password key, it will be more secure.
+
+            // 2a.) We're going to set our string.
+            string passwordSaltPlusString = _configuration.GetSection("AppSettings:PasswordKey").Value + 
+                Convert.ToBase64String(passwordSalt);
+                
+                // 3.) We're creating our 'actual password hash'.
+                // 3a.) we are passing in our password.
+                // 3b.) We are passing in our salt.
+                // 3c.) Method of Hashing. We are describing the schema to use when we are hashing in the 'HMACSHA.."
+                // 4d.) Our iteration. This is where we describe to our program how many times we want to hash this.
+                //      the more you hash it, the more secure your application is.
+                return KeyDerivation.Pbkdf2(
+                    password: password,
+                    salt: Encoding.ASCII.GetBytes(passwordSaltPlusString),
+                    prf: KeyDerivationPrf.HMACSHA256,
+                    iterationCount: 10,
+                    numBytesRequested: 256/8
+                );
+        }
     }
 }
+
