@@ -1,10 +1,10 @@
 
 namespace Gladwyne.Models
 {
-    partial class UserForRegistrationDTO
+    public partial class UserForRegistrationDTO
     {
-        string Email { get; set; } = "";
-        string Password { get; set; } = "";
-        string PasswordConfirm { get; set; } = "";
+        public string Email { get; set; } = "";
+        public string Password { get; set; } = "";
+        public string PasswordConfirm { get; set; } = "";
     }
 }

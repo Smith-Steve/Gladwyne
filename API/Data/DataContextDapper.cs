@@ -39,5 +39,22 @@ namespace Gladwyne.API.Data
             IDbConnection dbConnection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
             return dbConnection.Execute(sql);
         }
+
+        public bool ExecuteSqlWithParameters(string sql, List<SqlParameter> parameters)
+        {
+            SqlCommand commandWithParameters = new SqlCommand(sql);
+            foreach(SqlParameter parameter in parameters)
+            {
+                commandWithParameters.Parameters.Add(parameter);
+            }
+            SqlConnection dbConnection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"));
+            dbConnection.Open();
+            commandWithParameters.Connection = dbConnection;
+
+            int rowsAffected = commandWithParameters.ExecuteNonQuery();
+            dbConnection.Close();
+
+            return rowsAffected > 0;
+        }
     }
 }
