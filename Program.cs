@@ -1,3 +1,6 @@
+using Gladwyne.API.Interfaces;
+using Gladwyne.API.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -23,6 +26,10 @@ builder.Services.AddCors((options) =>
             .AllowCredentials();
     });
 });
+
+//This is linking our IUserRepository Interface as a scoped connection to UserRepository.
+//This gives us access to the methods in UserRepository without actually using UserRepository.
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var application = builder.Build();
 
