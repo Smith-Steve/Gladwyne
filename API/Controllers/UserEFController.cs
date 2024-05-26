@@ -4,6 +4,7 @@ using Gladwyne.Models;
 using Gladwyne.Controllers.Contacts;
 using Microsoft.AspNetCore.Mvc;
 using AutoMapper;
+using Gladwyne.API.Interfaces;
 
 namespace Gladwyne.API.Controllers
 {
@@ -12,12 +13,12 @@ namespace Gladwyne.API.Controllers
     //The controller name is defined by the string "User" in "UserController" - the class.
     public class UserEFController : ControllerBase
     {
-        DataContextEF _entityFramework;
         IMapper _mapper;
-        public UserEFController(IConfiguration configuration)
+        IUserRepository _userRepository;
+        public UserEFController(IConfiguration configuration, IUserRepository userRepository)
         {
             //User Constructor
-            _entityFramework = new DataContextEF(configuration);
+            _userRepository = userRepository;
             _mapper = new Mapper(new MapperConfiguration(config => {
                 config.CreateMap<UserDTO, User>();
             }));
@@ -27,29 +28,22 @@ namespace Gladwyne.API.Controllers
         [HttpGet("GetUsers")]
         public IEnumerable<User> GetUsers()
         {
-            IEnumerable<User> users = _entityFramework.Users.ToList<User>();
+            IEnumerable<User> users = _userRepository.GetUsers();
             return users;
         }
 
         [HttpGet("GetSingleUser/{userId}")]
         public User GetSingleUser(int userId)
         {
-
-            User? user = _entityFramework.Users.Where(user => user.UserId == userId)
-                .FirstOrDefault<User>();
-            if(user != null)
-            {
-                return user;
-            }
-            throw new Exception("Failed To Get User");
+            return _userRepository.GetSingleUser(userId);
         }
         
         [HttpPost]
         public IActionResult AddUser(UserDTO user)
         {
             User userDB = _mapper.Map<User>(user);
-            _entityFramework.Add(userDB);
-            if(_entityFramework.SaveChanges() > 0)
+            _userRepository.AddEntity<User>(userDB);
+            if(_userRepository.SaveChanges())
             {
                 return Ok("User Added");
             }
@@ -58,15 +52,14 @@ namespace Gladwyne.API.Controllers
         [HttpPut("EditUser")]
         public IActionResult EditUser(User user)
         {
-            User? userDB = _entityFramework.Users
-                .Where(u => u.UserId == user.UserId)
-                .FirstOrDefault<User>(); 
+            User? userDB = _userRepository.GetSingleUser(user.UserId);
+
             if (userDB != null)
             {
                 userDB.FirstName = user.FirstName;
                 userDB.LastName = user.LastName;
                 userDB.Email = user.Email;
-                if (_entityFramework.SaveChanges() > 0)
+                if (_userRepository.SaveChanges())
                 {
                     return Ok("Updated User");
                 }
@@ -78,12 +71,14 @@ namespace Gladwyne.API.Controllers
         [HttpDelete("DeleteUser/{userId}")]
         public IActionResult DeleteUser(int userId)
         {
-            User? userDb = _entityFramework.Users.Where(u => u.UserId == userId).FirstOrDefault<User>();
+            User? userDb = _userRepository.GetSingleUser(userId);
 
             if(userDb != null)
             {
-                _entityFramework.Users.Remove(userDb);
-                if(_entityFramework.SaveChanges() > 0)
+                _userRepository.RemoveEntity<User>(userDb); 
+                //'userDb' is a variable of user type. So we want to make sure we're passing that information
+                //in
+                if(_userRepository.SaveChanges())
                 {
                     return Ok("User Successfully Removed");
                 }

@@ -1,3 +1,4 @@
+using Gladwyne.Models;
 namespace Gladwyne.API.Interfaces
 {
     public interface IUserRepository
@@ -7,5 +8,7 @@ namespace Gladwyne.API.Interfaces
           public bool SaveChanges();
           public void AddEntity<T>(T entityToAdd);
           public void RemoveEntity<T>(T entityToAdd);
+          public IEnumerable<User> GetUsers();
+          public User GetSingleUser(int userId);
     }
 }

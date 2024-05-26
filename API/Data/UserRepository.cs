@@ -1,4 +1,5 @@
 using Gladwyne.API.Interfaces;
+using Gladwyne.Models;
 
 
 namespace Gladwyne.API.Data
@@ -31,6 +32,23 @@ namespace Gladwyne.API.Data
             {
                 _entityFramework.Add(entityToAdd);
             }
+        }
+
+        public IEnumerable<User> GetUsers()
+        {
+            IEnumerable<User> users = _entityFramework.Users.ToList<User>();
+            return users;
+        }
+
+        public User GetSingleUser(int userId)
+        {
+            User? user = _entityFramework.Users.Where(user => user.UserId == userId)
+                .FirstOrDefault<User>();
+            if(user != null)
+            {
+                return user;
+            }
+            throw new Exception("Failed To Get User");
         }
     }
 }
