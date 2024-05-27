@@ -1,5 +1,8 @@
 using Gladwyne.API.Interfaces;
 using Gladwyne.API.Data;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +33,27 @@ builder.Services.AddCors((options) =>
 //This is linking our IUserRepository Interface as a scoped connection to UserRepository.
 //This gives us access to the methods in UserRepository without actually using UserRepository.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+string? tokenKeyString = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
 
+SymmetricSecurityKey tokenKey = new SymmetricSecurityKey(
+    Encoding.UTF8.GetBytes(
+        tokenKeyString != null ? tokenKeyString : ""
+    )
+);
+TokenValidationParameters tokenValidationParameters = new TokenValidationParameters()
+{
+    //The settings of the token validation options.
+    IssuerSigningKey = tokenKey,
+    ValidateIssuer = false,
+    ValidateIssuerSigningKey = false,
+    ValidateAudience = false,
+};
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => {
+        //This is where we set our token validation options.
+        options.TokenValidationParameters = tokenValidationParameters;
+    });
 var application = builder.Build();
 
 // Configure the HTTP request pipeline.
