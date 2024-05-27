@@ -76,7 +76,11 @@ namespace Gladwyne.API.Controllers
                         // We are now ready to pass this into our DB.
                         if(_dapper.ExecuteSqlWithParameters(sqlAddAuthentication, sqlParameters))
                         {
-                            return Ok();
+                            string sqlAddUser = $"INSERT INTO GladwyneSchema.USERS(FirstName, Lastname, Email) VALUES ('{newUser.FirstName}', '{newUser.LastName}', '{newUser.Email}')";
+                            if(_dapper.ExecuteSql(sqlAddUser))
+                            {
+                                return Ok();
+                            }
                         }
                         throw new Exception("Failed to Register User");
                 }
