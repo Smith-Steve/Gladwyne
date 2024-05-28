@@ -1,6 +1,6 @@
 namespace Gladwyne.Models
 {
-    public partial class Notes
+    public partial class Note
     {
         public int NoteId { get; set; }
         public int UserId { get; set; }
