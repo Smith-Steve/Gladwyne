@@ -23,6 +23,7 @@ namespace Gladwyne.API.Controllers
             IEnumerable<Note> noteResult = _dapper.LoadData<Note>(sqlGetAllNotesFromOrg);
             return noteResult;
         }
+
         [HttpGet("GetSingleNote/Note/{noteId}")]
         public Note GetSingleNote(int noteId)
         {
@@ -70,6 +71,15 @@ namespace Gladwyne.API.Controllers
                 return Ok();
             }
             throw new Exception("Failed To Delete Note");
+        }
+
+        [HttpGet("NotesSearch/Organization/{orgId}/{searchParam}")]
+        public IEnumerable<Note> GetAllNotesFromOrg(int orgId, string searchParam)
+        {
+            string sqlGetAllNotesFromOrg = $"SELECT NoteId, UserId, OrgId, NoteTitle, NoteContent, NoteCreated, NoteUpdated FROM GladwyneSchema.Notes WHERE (OrgId = {orgId}) AND (NoteTitle LIKE '%{searchParam}%' OR NoteContent LIKE '%{searchParam}%')";
+            Console.WriteLine(sqlGetAllNotesFromOrg);
+            IEnumerable<Note> noteResult = _dapper.LoadData<Note>(sqlGetAllNotesFromOrg);
+            return noteResult;
         }
     }
 }
