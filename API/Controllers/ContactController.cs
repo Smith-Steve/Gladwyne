@@ -1,9 +1,12 @@
 using Gladwyne.API.Data;
 using Gladwyne.Models;
+using Gladwyne.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gladwyne.Controllers.Contacts
 {
+    [ApiController]
+    [Route("[controller]")]
     public class ContactController : ControllerBase
     {
         private DataContextDapper _dapper;
@@ -12,57 +15,99 @@ namespace Gladwyne.Controllers.Contacts
             _dapper = new DataContextDapper(configuration);
         }
 
-        //Get All Contacts
-        [HttpGet("GetAll")]
-        public IEnumerable<Contact> GetAllContacts()
-        {
-            string sqlGetAllContacts = "Select ContactId, FirstName, LastName, Email, OrgId from [GladwyneSchema].Contacts";
-            IEnumerable<Contact> contacts = _dapper.LoadData<Contact>(sqlGetAllContacts);
-            return contacts;
-        }
-
         //Get All Contacts From Organization
-
-        [HttpGet("GetAllOrganization/{OrgId}")]
-        public IEnumerable<Contact> GetAllContactsFromOrganization(int OrgId)
+        [HttpGet("GetAllFromOrganization/{orgId}")]
+        public ActionResult<ItemResponse<Contact>> GetAllContactsFromOrganization(int orgId)
         {
-            string sqlGetAllContactsFromOrganization = $"Select ContactId, FirstName, LastName, Email, OrgId from [GladwyneSchema].Contacts WHERE OrgId = {OrgId}";
-            IEnumerable<Contact> contacts = _dapper.LoadData<Contact>(sqlGetAllContactsFromOrganization);
-            return contacts;
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlGetAllContactsOrg = $"EXECUTE [GladwyneSchema].[Contacts_GetAllFromOrganization_Procedure] @OrgId={orgId}";
+            try
+            {
+                IEnumerable<Contact> contactsListFromOrg = _dapper.LoadData<Contact>(sqlGetAllContactsOrg);
+                if(contactsListFromOrg != null)
+                {
+                    response = new ItemsResponse<Contact> {Items = contactsListFromOrg};
+                }
+                else
+                {
+                    responseCode = 404;
+                    response = new ErrorResponse("Application Resource Could Not Be Found.");
+                }
+            }
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse(exception.Message);
+            }
+            return StatusCode(responseCode, response);
         }
 
         //Get Contact By ID
         [HttpGet("GetContact/{contactId}")]
-        public Contact GetSingleContact(int contactId)
+        public ActionResult<ItemResponse<Contact>> GetSingleContact(int contactId)
         {
-            string sqlGetContact = $"Select ContactId, FirstName, LastName, OrgId from [GladwyneSchema].Contacts where ContactId = {contactId}";
-            Contact contact = _dapper.LoadDataSingle<Contact>(sqlGetContact);
-            return contact;
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlGetContact = $"EXECUTE [GladwyneSchema].[Contact_GETONE_Procedure] @ContactId = {contactId}";
+            try
+            {
+                Contact contact = _dapper.LoadDataSingle<Contact>(sqlGetContact);
+                if(contact != null)
+                {
+                    response = new ItemResponse<Contact> {Item = contact};
+                }
+                else
+                {
+                    responseCode = 500;
+                    response = new ErrorResponse("Resource Does Not Exist.");
+                }
+            }
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse("Resource Does Not Exist.");
+            }
+            return StatusCode(responseCode, response);
         }
 
         //Delete Contact
         [HttpDelete("DeleteContact/{contactId}")]
         public IActionResult DeleteContact(int contactId)
         {
-            string sqlDeleteContact = $"DELETE FROM [GladwyneSchema].Contacts Where ContactId = {contactId}";
-            if(_dapper.ExecuteSql(sqlDeleteContact))
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlDeleteContact = $"[GladwyneSchema].[Contact_DELETE_Procedure] @ContactId={contactId}";
+            try
             {
-                return Ok();
+                _dapper.ExecuteSql(sqlDeleteContact);
             }
-            throw new Exception("Failed to Delete Contact");
+            catch(Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse("Application Resource Could Not Be Found.");
+            }
+            return StatusCode(responseCode, response);
         }
 
         //Create Contact
         [HttpPost("CreateContact")]
-        public IActionResult AddContact(Contact contact)
+        public IActionResult AddContact(ContactDTO contact)
         {
-            string sqlAddContact = $"INSERT INTO [GladwyneSchema].Contacts (FirstName, LastName, Email, OrgId) VALUES ('{contact.FirstName}', '{contact.LastName}', '{contact.Email}', '{contact.OrgId}')";
-
-            if(_dapper.ExecuteSql(sqlAddContact))
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlAddContact = $"EXECUTE [GladwyneSchema].[Contact_INSERT_Procedure] @FirstName='{contact.FirstName}', @LastName='{contact.LastName}', @Email='{contact.Email}', @OrgId={contact.OrgId}";
+            try
             {
-                return Ok();
+                _dapper.ExecuteSql(sqlAddContact);
+                response = new SuccessResponse();
             }
-            throw new Exception("Failed to create Contact");
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse($"Unable To Crease Resource: {exception.Message}");
+            }
+            return StatusCode(responseCode, response);
         }
 
         //Edit Contact
@@ -86,7 +131,6 @@ namespace Gladwyne.Controllers.Contacts
             {
                 throw new Exception("Please check the contact entered and try again.");
             }
-
         }
     }
 }

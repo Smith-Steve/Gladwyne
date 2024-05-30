@@ -1,6 +1,8 @@
 using Gladwyne.API.Data;
 using Gladwyne.Models;
+using Gladwyne.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
 
 namespace Gladwyne.API.Controllers
 {
@@ -20,64 +22,126 @@ namespace Gladwyne.API.Controllers
         [HttpDelete("OrganizationDelete/{orgId}")]
         public IActionResult DeleteOrganization(int orgId)
         {
-            string sqlDeleteOrganization = $"DELETE FROM [GladwyneSchema].Organizations WHERE OrgId = {orgId}";
-            if(_dapper.ExecuteSql(sqlDeleteOrganization))
+                        //This Delete Statement Won't Work Right Now Because If An Organization Is Deleted,
+            //But there is something in one of the supporting tables supporting it, it won't delete.
+            int responseCode = 200;
+            BaseResponse respone = null;
+            string sqlDeleteOrganization = $"[GladwyneSchema].[Organization_DELETE_Procedure] @OrgId = {orgId}";
+            try
             {
-                return StatusCode(200, "Delete Successful");
+                _dapper.ExecuteSql(sqlDeleteOrganization);
+                respone = new SuccessResponse();
             }
-            throw new Exception("Failed to Delete Organization.");
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                respone = new ErrorResponse("Application Resource Not Found");
+            }
+            return StatusCode(responseCode, responseCode);
         }
         
         //Organization Post Controller
         [HttpPost("OrganizationPost")]
-        public IActionResult AddOrganization(OrganizationDTO organization)
+        public ActionResult<ItemResponse<int>> AddOrganization(OrganizationDTO organization)
         {
-            string sqlAddOrganization = @"
-            INSERT INTO [GladwyneSchema].Organizations(
-                OrgName, OrgDescription, OrgIndustry,
-                OrgWebsite, orgActive,OrgUpdateDate, OrgCreateDate) VALUES ('"
-                +  organization.OrgName
-                + "','" + organization.OrgDescription
-                + "','" + organization.OrgIndustry
-                + "','" + organization.OrgWebsite
-                + "','" + organization.OrgActive
-                + "', GETDATE(), GETDATE() )";
-            if(_dapper.ExecuteSql(sqlAddOrganization))
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlAddOrganization = $"[GladwyneSchema].[Organization_INSERT_Procedure] @OrgName='{organization.OrgName}', @OrgDescription='{organization.OrgDescription}', @OrgIndustry='{organization.OrgIndustry}', @OrgWebsite='{organization.OrgWebsite}', @OrgActive='{organization.OrgActive}'";
+            try
             {
-                return Ok();
+                _dapper.ExecuteSql(sqlAddOrganization);
+                response = new SuccessResponse();
             }
-            throw new Exception("Failed to create new Organization.");
+            catch(Exception exception)
+            {
+                response = new ErrorResponse("Unable To Add Organization");
+            }
+            return StatusCode(responseCode, response);
         }
 
         //Organization Put Controller
         [HttpPut("OrganizationPut/{orgId}")]
-        public IActionResult EditOrganization(Organization organization, string orgId)
+        public IActionResult EditOrganization(Organization organization, int orgId)
         {
-            string sqlUpdateOrganization = $"UPDATE [GladwyneSchema].Organizations SET OrgName = '{organization.OrgName}', OrgDescription = '{organization.OrgDescription}', OrgIndustry = '{organization.OrgIndustry}', OrgWebsite = '{organization.OrgWebsite}', OrgUpdateDate = GETDATE(), OrgActive = '{organization.OrgActive}' WHERE OrgId = {orgId}";
-            Console.WriteLine(sqlUpdateOrganization);
-            if(_dapper.ExecuteSql(sqlUpdateOrganization))
+            int statusCode = 200;
+            BaseResponse response = null;
+            ActionResult<ItemResponse<Organization>> responseFromGet = null;
+            string sqlUpdateOrganization = $"[GladwyneSchema].[Organization_UPDATE_Procedure] @OrgDescription = '{organization.OrgDescription}', @OrgIndustry = '{organization.OrgIndustry}', @OrgWebsite = '{organization.OrgWebsite}', @OrgActive = {organization.OrgActive}, @OrgId = {orgId}";
+            try
             {
-                return Ok();
+                responseFromGet = GetSingleOrganization(orgId);
+                if(responseFromGet.Value != null)
+                {
+                    statusCode = 500;
+                    response = new ErrorResponse("Resource Does Not Exist");
+                }
+                else
+                {
+                    _dapper.ExecuteSql(sqlUpdateOrganization);
+                    response = new SuccessResponse();
+                }
             }
-            throw new Exception($"Failed to Update Organization: ${organization.OrgName}");
+            catch(Exception exception)
+            {
+                statusCode = 500;
+                response = new ErrorResponse(exception.Message);
+            }
+            return StatusCode(statusCode,response);
         }
 
         //Get Organization By ID
-        [HttpGet("{orgId}")]
-        public Organization GetSingleOrganization(int orgId)
+        [HttpGet("OrganizationGet/GetOne/{orgId}")]
+        public ActionResult<ItemResponse<Organization>> GetSingleOrganization(int orgId)
         {
-            string sqlGetOrganization = $"Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive From [GladwyneSchema].Organizations WHERE OrgId = {orgId}";
-            Organization organization = _dapper.LoadDataSingle<Organization>(sqlGetOrganization);
-            return organization;
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlGetOrganization = $"[GladwyneSchema].[Organization_GETONE_Procedure] @OrgId = {orgId}";
+            try
+            {
+                Organization organization = _dapper.LoadDataSingle<Organization>(sqlGetOrganization);
+                if(organization == null)
+                {
+                    throw new Exception("Organization Is Equal To Null");
+                }
+                else
+                {
+                    response = new ItemResponse<Organization> {Item = organization};
+                }
+            }
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse(exception.Message);
+            }
+            return StatusCode(responseCode, response);
         }
 
         //Get All Organizations
         [HttpGet("OrganizationGetAll")]
-        public IEnumerable<Organization> GetAllOrganizations()
+        public ActionResult<ItemsResponse<Organization>> GetAllOrganizations()
         {
             string sqlGetAllOrganizations = "Select OrgName, OrgDescription, OrgIndustry, OrgWebsite, OrgUpdateDate, OrgCreateDate, OrgActive from  [GladwyneSchema].Organizations";
-            IEnumerable<Organization> organizations = _dapper.LoadData<Organization>(sqlGetAllOrganizations);
-            return organizations;
+            int responseCode = 200;
+            BaseResponse response = null;
+            try
+            {
+                IEnumerable<Organization> organizations = _dapper.LoadData<Organization>(sqlGetAllOrganizations);
+                if(organizations == null)
+                {
+                    responseCode = 404;
+                    response = new ErrorResponse("Application Resouce Not Found");
+                }
+                else
+                {
+                    response = new ItemsResponse<Organization> {Items = organizations};
+                }
+            }
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse(exception.Message);
+            }
+            return StatusCode(responseCode, response);
         }
     }
 }

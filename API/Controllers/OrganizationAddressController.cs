@@ -33,7 +33,7 @@ namespace Gladwyne.API.Controllers
         [HttpGet("GetOne/{orgId}")]
         public OrganizationAddress GetOneOrganizationAddress(int orgId)
         {
-            string sqlGetOneOrgAddress = $"Select OrgId, OrgCountry, OrgStreetAddress, OrgStreetAddress2, OrgCity, OrgState, OrgZip from [GladwyneSchema].OrganizationsAddress Where OrgId = {orgId}";
+            string sqlGetOneOrgAddress = $"[GladwyneSchema].[OrganizationAddress_GETONE_Procedure] @OrgId = {orgId}";
             Console.WriteLine(sqlGetOneOrgAddress);
             OrganizationAddress organizationAddress = _dapper.LoadDataSingle<OrganizationAddress>(sqlGetOneOrgAddress);
             return organizationAddress;
@@ -50,7 +50,7 @@ namespace Gladwyne.API.Controllers
             //Note for the future - 
             //Set up Addresses so there can be more than one address, but set some special
             //feature for a primary address.
-            string sqlDeleteOneAddress = $"DELETE FROM [GladwyneSchema].OrganizationsAddress WHERE OrgId = {orgId}";
+            string sqlDeleteOneAddress = $"[GladwyneSchema].[OrganizationAddress_DELETE_Procedure] @OrgId = {orgId}";
             if(_dapper.ExecuteSql(sqlDeleteOneAddress))
             {
                 return Ok();
@@ -62,7 +62,7 @@ namespace Gladwyne.API.Controllers
         [HttpPost("Add")]
         public IActionResult PostOrganizationAddress(OrganizationAddress orgAddress)
         {
-            string sqlPostAddress = $"INSERT INTO [GladwyneSchema].OrganizationsAddress(OrgId, OrgCountry, OrgStreetAddress, OrgStreetAddress2, OrgCity, OrgState, OrgZip) VALUES ('{orgAddress.OrgId}', '{orgAddress.OrgCountry}','{orgAddress.OrgStreetAddress}', '{orgAddress.OrgStreetAddress2}','{orgAddress.OrgCity}','{orgAddress.OrgState}', '{orgAddress.OrgZip}')";
+            string sqlPostAddress = $"[GladwyneSchema].[OrganizationAddress_INSERT_Procedure] @OrgId='{orgAddress.OrgId}', @OrgCountry='{orgAddress.OrgCountry}', @OrgStreetAddress='{orgAddress.OrgStreetAddress}', @OrgStreetAddress2='{orgAddress.OrgStreetAddress2}', @OrgCity='{orgAddress.OrgCity}', @OrgState='{orgAddress.OrgState}', @OrgZip='{orgAddress.OrgZip}'";
             if(_dapper.ExecuteSql(sqlPostAddress))
             {
                 return Ok();
@@ -71,10 +71,10 @@ namespace Gladwyne.API.Controllers
         }
 
         [HttpPut("UpdateAddress")]
-        public IActionResult UpdateOrganizationAddress(OrganizationAddress orgAdress)
+        public IActionResult UpdateOrganizationAddress(OrganizationAddress orgAddress)
         {
-            string sqlUpdateOrgAddress = $"UPDATE [GladwyneSchema].OrganizationsAddress SET '{orgAdress.OrgCountry}','{orgAdress.OrgStreetAddress}', '{orgAdress.OrgStreetAddress2}','{orgAdress.OrgCity}','{orgAdress.OrgState}', '{orgAdress.OrgZip}' WHERE OrgId = '{orgAdress.OrgId}'";
-            if(_dapper.ExecuteSql(sqlUpdateOrgAddress))
+            string sqlPuteAddress = $"[GladwyneSchema].[OrganizationAddress_UPDATE_Procedure] @OrgId='{orgAddress.OrgId}', @OrgCountry='{orgAddress.OrgCountry}', @OrgStreetAddress='{orgAddress.OrgStreetAddress}', @OrgStreetAddress2='{orgAddress.OrgStreetAddress2}', @OrgCity='{orgAddress.OrgCity}', @OrgState='{orgAddress.OrgState}', @OrgZip='{orgAddress.OrgZip}'";
+            if(_dapper.ExecuteSql(sqlPuteAddress))
             {
                 return Ok();
             }
