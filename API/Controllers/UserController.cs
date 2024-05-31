@@ -3,6 +3,7 @@ using Gladwyne.API.Data;
 using Gladwyne.Models;
 using Gladwyne.Controllers.Contacts;
 using Microsoft.AspNetCore.Mvc;
+using Gladwyne.Models.Responses;
 
 namespace Gladwyne.API.Controllers
 {
@@ -20,76 +21,123 @@ namespace Gladwyne.API.Controllers
         }
 
         [HttpGet("GetUsers")]
-        public IEnumerable<User> GetUsers()
+        public ActionResult<ItemResponse<User>> GetUsers()
         {
+            int responseCode = 200;
+            BaseResponse response = null;
             string sqlGetUsersQuery = "EXECUTE GladwyneSchema.Users_GetAll_Procedure";
-            IEnumerable<User> users = _dapper.LoadData<User>(sqlGetUsersQuery);
-            return users;
-        }
-        [HttpGet("SingleUser/{userId}")]
-        public User GetSingleUser(int userId)
-        {
             try
             {
-                string sqlGetSingleUserProcedure = "EXECUTE [GladwyneSchema].[Users_GetOne_Procedure]" + "@UserId=" + userId.ToString();
-                User users = _dapper.LoadDataSingle<User>(sqlGetSingleUserProcedure);
-                return users;
-            }
-            catch (Exception exception)
-            {
-                throw new Exception("Application Resource Could Not Be Found: ", exception);
-            }
-        }
-
-        [HttpPut]
-        public IActionResult EditUser(User user)
-        {
-            try
-            {
-                User returnedUser = GetSingleUser(user.UserId);
-                string sqlUpdate = $"[GladwyneSchema].[Users_Update_Procedure] @UserId={user.UserId}, @FirstName='{user.FirstName}', @LastName='{user.LastName}', @Email='{user.Email}'";
-                if(_dapper.ExecuteSql(sqlUpdate))
+                IEnumerable<User> users = _dapper.LoadData<User>(sqlGetUsersQuery);
+                if(users != null)
                 {
-                    return Ok("User Updated");
+                    response = new ItemsResponse<User> {Items = users};
                 }
                 else
                 {
-                    throw new Exception("Failed To Update User");
-                };
+                    responseCode = 404;
+                    response = new ErrorResponse("Application Resource Not Found.");
+                }
             }
-            catch
+            catch (Exception exception)
             {
-                throw new Exception("Edit Check");
+                responseCode = 500;
+                response = new ErrorResponse(exception.Message);
             }
+            return StatusCode(responseCode, response);
+        }
+        [HttpGet("SingleUser/{userId}")]
+        public ActionResult<ItemResponse<User>> GetSingleUser(int userId)
+        {
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlGetSingleUserProcedure = "EXECUTE [GladwyneSchema].[Users_GetOne_Procedure]" + "@UserId=" + userId.ToString();
+            try
+            {
+                User users = _dapper.LoadDataSingle<User>(sqlGetSingleUserProcedure);
+                if(users != null)
+                {
+                    response = new ItemResponse<User> {Item = users};
+                }
+                else
+                {
+                    responseCode = 404;
+                    response = new ErrorResponse("Application Resource Not Found");
+                }
+            }
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse(exception.Message);
+            }
+            return StatusCode(responseCode, response);
+        }
+
+        [HttpPut("UserEdit")]
+        public IActionResult EditUser(User user)
+        {
+            int responseCode = 200;
+            BaseResponse response = null;
+            ActionResult<ItemResponse<User>> responseFromGet = null;
+            string sqlUpdate = $"[GladwyneSchema].[Users_Update_Procedure] @UserId={user.UserId}, @FirstName='{user.FirstName}', @LastName='{user.LastName}', @Email='{user.Email}'";
+            try
+            {
+                responseFromGet = GetSingleUser(user.UserId);
+                if(responseFromGet != null)
+                {
+                    _dapper.ExecuteSql(sqlUpdate);
+                    response = new SuccessResponse();
+                }
+                else
+                {
+                    responseCode = 404;
+                    response = new ErrorResponse("Resource Does Not Exist.");
+                }
+            }
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse(exception.Message);
+            }
+            return StatusCode(responseCode, response);
         }
 
 
         [HttpPost]
-        public IActionResult PostUser(UserDTO user)
+        public ActionResult<ItemResponse<UserDTO>> PostUser(UserDTO user)
         {
+            int responseCode = 200;
+            BaseResponse response = null;
             string sqlAddUser = $"[GladwyneSchema].[Users_INSERT_Procedure] @FirstName='{user.FirstName}', @LastName='{user.LastName}', @Email='{user.Email}'";
-            if(_dapper.ExecuteSql(sqlAddUser))
+            try
             {
-                return Ok();
+                _dapper.ExecuteSql(sqlAddUser);
+                response = new SuccessResponse();
             }
-            else
+            catch (Exception exception)
             {
-                throw new Exception("Failed to Add User.");
+                response = new ErrorResponse(exception.Message);
             }
+            return StatusCode(responseCode, response);
         }
 
         [HttpDelete]
         public IActionResult DeleteUser(int userId)
         {
+            int responseCode = 200;
+            BaseResponse response = null;
             string sqlDeleteUser = $"DELETE FROM [GladwyneSchema].Users Where UserId={userId}";
-            if(_dapper.ExecuteSql(sqlDeleteUser))
+            try
             {
-                return Ok();
+                _dapper.ExecuteSql(sqlDeleteUser);
+                response = new SuccessResponse();
             }
-            else
+            catch (Exception exception)
             {
-                throw new Exception("Unable to create user.");
+                responseCode = 500;
+                response = new ErrorResponse("Application Resource Not Found");
             }
+            return StatusCode(responseCode, response);
         }
     }
 }

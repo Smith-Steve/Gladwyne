@@ -114,23 +114,30 @@ namespace Gladwyne.Controllers.Contacts
         [HttpPut("EditContact")]
         public IActionResult EditContactInfo(Contact contact)
         {
+            int statusCode = 200;
+            BaseResponse response = null;
+            ActionResult<ItemResponse<Contact>> responseFromGet = null;
+            string editContactQuery = $"[GladwyneSchema].[Contact_UPDATE_Procedure] @ContactId={contact.ContactId}, @FirstName='{contact.FirstName}', @LastName='{contact.LastName}',@Email='{contact.Email}'";
             try
             {
-                GetSingleContact(contact.ContactId);
-                string updateSqlContact = $"UPDATE [GladwyneSchema].Contacts SET FirstName = '{contact.FirstName}', LastName = '{contact.LastName}', Email = '{contact.Email}' WHERE ContactId = {contact.ContactId}";
-                if(_dapper.ExecuteSql(updateSqlContact))
+                responseFromGet = GetSingleContact(contact.ContactId);
+                if(responseFromGet != null)
                 {
-                    return Ok();
+                    _dapper.ExecuteSql(editContactQuery);
+                    response = new SuccessResponse();
                 }
                 else
                 {
-                    throw new Exception($"Failed To Update Contact: {contact.FirstName} {contact.LastName}");
-                }
+                    statusCode = 404;
+                    response = new ErrorResponse("Resource Not Found");
+                };
             }
-            catch
+            catch(Exception exception)
             {
-                throw new Exception("Please check the contact entered and try again.");
+                statusCode = 500;
+                response = new ErrorResponse(exception.Message);
             }
+            return StatusCode(statusCode, response);
         }
     }
 }
