@@ -45,6 +45,9 @@ namespace Gladwyne.API.Data
             
             modelBuilder.Entity<Contact>()
                 .HasKey(contact => contact.ContactId);
+            
+            modelBuilder.Entity<Note>()
+                .HasKey(note => note.NoteId);
         }
     }
 }

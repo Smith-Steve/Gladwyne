@@ -1,21 +1,26 @@
 using Gladwyne.API.Data;
 using Gladwyne.Models;
 using Gladwyne.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Gladwyne.API.Interfaces;
 using Microsoft.AspNetCore.Razor.Language.CodeGeneration;
 
 namespace Gladwyne.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     //Controller "Organization"
     public class OrganizationController : ControllerBase
     {
-        DataContextDapper _dapper;
-        public OrganizationController(IConfiguration configuration)
+        // DataContextDapper _dapper;
+        IOrganizationService _organizationService;
+        public OrganizationController(IOrganizationService organizationService)
         {
             //Class Initializer
-            _dapper = new DataContextDapper(configuration);
+            // _dapper = new DataContextDapper(configuration);
+            _organizationService = organizationService;
         }
 
         //Organization Delete Controller
@@ -29,7 +34,7 @@ namespace Gladwyne.API.Controllers
             string sqlDeleteOrganization = $"[GladwyneSchema].[Organization_DELETE_Procedure] @OrgId = {orgId}";
             try
             {
-                _dapper.ExecuteSql(sqlDeleteOrganization);
+                // _dapper.ExecuteSql(sqlDeleteOrganization);
                 respone = new SuccessResponse();
             }
             catch (Exception exception)
@@ -49,7 +54,7 @@ namespace Gladwyne.API.Controllers
             string sqlAddOrganization = $"[GladwyneSchema].[Organization_INSERT_Procedure] @OrgName='{organization.OrgName}', @OrgDescription='{organization.OrgDescription}', @OrgIndustry='{organization.OrgIndustry}', @OrgWebsite='{organization.OrgWebsite}', @OrgActive='{organization.OrgActive}'";
             try
             {
-                _dapper.ExecuteSql(sqlAddOrganization);
+                // _dapper.ExecuteSql(sqlAddOrganization);
                 response = new SuccessResponse();
             }
             catch(Exception exception)
@@ -77,7 +82,7 @@ namespace Gladwyne.API.Controllers
                 }
                 else
                 {
-                    _dapper.ExecuteSql(sqlUpdateOrganization);
+                    // _dapper.ExecuteSql(sqlUpdateOrganization);
                     response = new SuccessResponse();
                 }
             }
@@ -98,7 +103,34 @@ namespace Gladwyne.API.Controllers
             string sqlGetOrganization = $"[GladwyneSchema].[Organization_GETONE_Procedure] @OrgId = {orgId}";
             try
             {
-                Organization organization = _dapper.LoadDataSingle<Organization>(sqlGetOrganization);
+                // Organization organization = _dapper.LoadDataSingle<Organization>(sqlGetOrganization);
+                // if(organization == null)
+                // {
+                //     throw new Exception("Organization Is Equal To Null");
+                // }
+                // else
+                // {
+                //     response = new ItemResponse<Organization> {Item = organization};
+                // }
+            }
+            catch (Exception exception)
+            {
+                responseCode = 500;
+                response = new ErrorResponse(exception.Message);
+            }
+            return StatusCode(responseCode, response);
+        }
+
+        [HttpGet("OrganizationGet/GetOne2/{orgId}")]
+        public ActionResult<ItemResponse<Organization>> GetOne(int orgId)
+        {
+            int responseCode = 200;
+            BaseResponse response = null;
+            string sqlGetOrganization = $"[GladwyneSchema].[Organization_GETONE_Procedure] @OrgId = {orgId}";
+            try
+            {
+                // Organization organization = _dapper.LoadDataSingle<Organization>(sqlGetOrganization);
+                Organization organization = _organizationService.GetById(orgId);
                 if(organization == null)
                 {
                     throw new Exception("Organization Is Equal To Null");
@@ -125,16 +157,16 @@ namespace Gladwyne.API.Controllers
             BaseResponse response = null;
             try
             {
-                IEnumerable<Organization> organizations = _dapper.LoadData<Organization>(sqlGetAllOrganizations);
-                if(organizations == null)
-                {
-                    responseCode = 404;
-                    response = new ErrorResponse("Application Resouce Not Found");
-                }
-                else
-                {
-                    response = new ItemsResponse<Organization> {Items = organizations};
-                }
+                // IEnumerable<Organization> organizations = _dapper.LoadData<Organization>(sqlGetAllOrganizations);
+                // if(organizations == null)
+                // {
+                //     responseCode = 404;
+                //     response = new ErrorResponse("Application Resouce Not Found");
+                // }
+                // else
+                // {
+                //     response = new ItemsResponse<Organization> {Items = organizations};
+                // }
             }
             catch (Exception exception)
             {

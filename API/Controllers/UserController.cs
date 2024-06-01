@@ -4,9 +4,11 @@ using Gladwyne.Models;
 using Gladwyne.Controllers.Contacts;
 using Microsoft.AspNetCore.Mvc;
 using Gladwyne.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Gladwyne.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     //The controller name is defined by the string "User" in "UserController" - the class.

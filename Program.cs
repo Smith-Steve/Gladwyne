@@ -1,5 +1,6 @@
 using Gladwyne.API.Interfaces;
 using Gladwyne.API.Data;
+using Gladwyne.API.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -33,6 +34,7 @@ builder.Services.AddCors((options) =>
 //This is linking our IUserRepository Interface as a scoped connection to UserRepository.
 //This gives us access to the methods in UserRepository without actually using UserRepository.
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddSingleton<IOrganizationService, OrganizationService>();
 string? tokenKeyString = builder.Configuration.GetSection("AppSettings:TokenKey").Value;
 
 SymmetricSecurityKey tokenKey = new SymmetricSecurityKey(

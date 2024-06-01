@@ -2,6 +2,8 @@
 using Gladwyne.API.Data;
 using Gladwyne.Models;
 using Gladwyne.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
+
 
 //Exteranl Spaces
 // - Microsoft Spaces
@@ -10,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 //Organization Address Controller.
 namespace Gladwyne.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class OrganizationAddressController : ControllerBase
